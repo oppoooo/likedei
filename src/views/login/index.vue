@@ -8,6 +8,10 @@
       :model="loginForm"
       :rules="loginFormRules"
     >
+      <!-- logo -->
+      <div class="logo">
+        <img src="../../assets/img/微信图片_20220730221439.png" alt="" />
+      </div>
       <!-- 表单 -->
       <!-- 手机 -->
       <el-form-item prop="mobile">
@@ -44,7 +48,7 @@
         <i class="svg-container">
           <svg-icon iconClass="yzm"></svg-icon>
         </i>
-        <el-input placeholder="请输入验证码" v-model="loginForm.yzm">
+        <el-input ref="focu" placeholder="请输入验证码" v-model="loginForm.yzm">
         </el-input>
         <span @click="getVerification" class="pic">
           <img style="height: 50px" :src="verification" alt="" />
@@ -63,12 +67,15 @@
 <script>
 import SvgIcon from "@/components/SvgIcon/index.vue";
 import { createNamespacedHelpers } from "vuex";
-const { mapState: userMapState } = createNamespacedHelpers("user");
+const { mapState: userMapState, mapMutations: userMapMutations } =
+  createNamespacedHelpers("user");
+import { login } from "@/api/index";
 export default {
   name: "Login",
   data() {
     return {
       passwordShow: true,
+      myClientToken: "",
       loginForm: {
         mobile: "admin",
         password: "admin",
@@ -84,15 +91,53 @@ export default {
   },
   computed: {
     ...userMapState(["verification"]),
+    ...userMapState(["userData"]),
+
+    // ...userMapState(["userLogin"]),
   },
   methods: {
     // 获取验证码
     getVerification() {
       const random = Math.ceil(Math.random() * 999);
+      this.myClientToken = random;
       console.log(random);
       this.$store.dispatch("user/getVerification", random);
     },
     // 登录验证
+    ...userMapMutations(["getUserData"]),
+
+    async login() {
+      try {
+        const res = await login({
+          loginName: this.loginForm.mobile,
+          password: this.loginForm.password,
+          mobile: "",
+          code: this.loginForm.yzm,
+          clientToken: this.myClientToken,
+          loginType: "0",
+          account: "",
+        });
+
+        console.log(res);
+        console.log(res.data.success);
+        if (this.loginForm.yzm.length === 0) {
+          this.$refs.focu.focus();
+          return this.$refs.focu.blur();
+        }
+        if (!res.data.success && this.loginForm.yzm > 0) {
+          return this.$message({
+            type: "info",
+            message: res.data.msg,
+          });
+        }
+        if (res.data.success) {
+          this.getUserData(res.data);
+          // 将数据传回vuex
+          console.log(this.userData);
+          this.$router.push("/dashboard");
+        }
+      } catch (error) {}
+    },
   },
   created() {
     this.getVerification();
@@ -161,6 +206,12 @@ $cursor: #fff;
     }
   }
 }
+.el-message {
+  background-color: #fef0f0;
+  .el-message__content {
+    color: #f56c6c;
+  }
+}
 </style>
 
 <style lang="scss" scoped>
@@ -189,6 +240,16 @@ $light_gray: #eee;
     border-radius: 10px;
   }
   .login-form {
+    .logo {
+      position: absolute;
+      top: -48px;
+      left: 50%;
+      margin-left: -48px;
+      img {
+        width: 96px;
+        height: 96px;
+      }
+    }
     position: absolute;
     top: 50%;
     left: 50%;
