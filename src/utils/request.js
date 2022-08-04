@@ -1,12 +1,14 @@
 import axios from "axios";
 import store from "@/store/index";
 import { getTokenTime } from "@/utils/auth";
+import { Message } from "element-ui";
+
 import router from "@/router";
 console.log(getTokenTime());
 function isTimeOut() {
   const current = Date.now();
   const tokenTime = getTokenTime();
-  const timeout = 3 * 1000;
+  const timeout = 2 * 60 * 60 * 1000;
   return current - tokenTime > timeout;
 }
 if (store.state.user.token) {
@@ -16,6 +18,7 @@ if (store.state.user.token) {
     store.dispatch("user/logout");
     router.push("/login");
     Promise.reject(new Error("登录过期"));
+    Message.error("登录过期");
   }
 }
 

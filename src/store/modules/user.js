@@ -43,7 +43,6 @@ export default {
       if (res.data.success === false) {
         Message.error(res.data.msg);
       }
-
       context.commit("userToken", res.data.token);
       setTokenTime();
       // 用户信息
