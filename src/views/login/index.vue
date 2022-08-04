@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <el-form
-      ref="loginForm"
+      ref="rulesForm"
       class="login-form"
       auto-complete="on"
       label-position="left"
@@ -58,6 +58,7 @@
         @click="login"
         type="primary"
         style="width: 100%; margin-bottom: 30px"
+        :loading="isLogin"
         >登录</el-button
       >
     </el-form>
@@ -67,19 +68,19 @@
 <script>
 import SvgIcon from "@/components/SvgIcon/index.vue";
 import { createNamespacedHelpers } from "vuex";
-const { mapState: userMapState, mapMutations: userMapMutations } =
+const { mapState: userMapState, mapActions: userMapActions } =
   createNamespacedHelpers("user");
-import { login } from "@/api/index";
 export default {
   name: "Login",
   data() {
     return {
+      isLogin: false,
       passwordShow: true,
-      myClientToken: "",
       loginForm: {
         mobile: "admin",
         password: "admin",
         yzm: "",
+        myClientToken: "",
       },
       // 账号密码验证规则
       loginFormRules: {
@@ -91,57 +92,41 @@ export default {
   },
   computed: {
     ...userMapState(["verification"]),
-    ...userMapState(["userData"]),
-
-    // ...userMapState(["userLogin"]),
   },
   methods: {
     // 获取验证码
     getVerification() {
       const random = Math.ceil(Math.random() * 999);
-      this.myClientToken = random;
+      this.loginForm.myClientToken = random;
       console.log(random);
       this.$store.dispatch("user/getVerification", random);
     },
     // 登录验证
-    ...userMapMutations(["getUserData"]),
-
+    ...userMapActions(["Login"]),
     async login() {
       try {
-        const res = await login({
+        this.isLogin = true;
+        await this.$refs.rulesForm.validate();
+        await this.Login({
           loginName: this.loginForm.mobile,
           password: this.loginForm.password,
           mobile: "",
           code: this.loginForm.yzm,
-          clientToken: this.myClientToken,
+          clientToken: this.loginForm.myClientToken,
           loginType: "0",
           account: "",
         });
-
-        console.log(res);
-        console.log(res.data.success);
-        if (this.loginForm.yzm.length === 0) {
-          this.$refs.focu.focus();
-          return this.$refs.focu.blur();
-        }
-        if (!res.data.success && this.loginForm.yzm > 0) {
-          return this.$message({
-            type: "info",
-            message: res.data.msg,
-          });
-        }
-        if (res.data.success) {
-          this.getUserData(res.data);
-          // 将数据传回vuex
-          console.log(this.userData);
-          this.$router.push("/dashboard");
-        }
-      } catch (error) {}
+        console.log(11);
+        this.$router.push("/");
+        this.$message.success("登录成功");
+      } catch (error) {
+        // 防抖
+        this.isLogin = false;
+      }
     },
   },
   created() {
     this.getVerification();
-    console.log(this.verification);
   },
   components: { SvgIcon },
 };
@@ -174,7 +159,8 @@ $cursor: #fff;
     }
   }
   background-image: url("../../assets/img/微信图片_20220730200442.png"); // 设置背景图片
-  background-position: center; // 将图片位置设置为充满整个屏幕
+  // background-position: center; // 将图片位置设置为充满整个屏幕
+  background-size: cover;
   .el-input {
     display: inline-block;
     height: 50px;

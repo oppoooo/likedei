@@ -1,36 +1,21 @@
 <template>
   <div class="navbar">
-
-    <!-- <breadcrumb class="breadcrumb-container" /> -->
-
-    <!-- <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
-        <div class="avatar-wrapper">
-          <img :src="avatar + '?imageView2/1/w/80/h/80'" class="user-avatar" />
-          <i class="el-icon-caret-bottom" />
+    <div class="right-menu">
+      <div class="avatar-container" trigger="click">
+        <div class="avatar">
+          <div class="userPic">
+            <img
+              :src="$store.state.user.MyuserInfo.image - 1"
+              v-imgError="defaultImg"
+            />
+          </div>
+          <div class="userName">
+            欢迎您，<span>{{ $store.state.user.MyuserInfo.roleName }}</span>
+          </div>
+          <div @click="logout">退出<i class="el-icon-caret-bottom" /></div>
         </div>
-        <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item> Home </el-dropdown-item>
-          </router-link>
-          <a
-            target="_blank"
-            href="https://github.com/PanJiaChen/vue-admin-template/"
-          >
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a
-            target="_blank"
-            href="https://panjiachen.github.io/vue-element-admin-site/#/"
-          >
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
-          <el-dropdown-item divided @click.native="logout">
-            <span style="display: block">Log Out</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-    </div> -->
+      </div>
+    </div>
   </div>
 </template>
 
@@ -38,8 +23,13 @@
 import { mapGetters } from "vuex";
 import Breadcrumb from "@/components/Breadcrumb";
 import Hamburger from "@/components/Hamburger";
-
+import defaultImg from "../../assets/img/下载.png";
 export default {
+  data() {
+    return {
+      defaultImg,
+    };
+  },
   components: {
     Breadcrumb,
     Hamburger,
@@ -61,11 +51,30 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
+  height: 60px;
   overflow: hidden;
   position: relative;
-  background: #fff;
+  background-color: #5373e0;
+
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  .app-breadcrumb {
+    display: inline-block;
+    font-size: 18px;
+    line-height: 50px;
+    margin-left: 10px;
+    color: #ffffff;
+    cursor: text;
+    .breadBtn {
+      background: #84a9fe;
+      font-size: 14px;
+      padding: 0 10px;
+      display: inline-block;
+      height: 30px;
+      line-height: 30px;
+      border-radius: 10px;
+      margin-left: 15px;
+    }
+  }
 
   .hamburger-container {
     line-height: 46px;
@@ -74,6 +83,8 @@ export default {
     cursor: pointer;
     transition: background 0.3s;
     -webkit-tap-highlight-color: transparent;
+    color: #fff;
+    fill: currentColor;
 
     &:hover {
       background: rgba(0, 0, 0, 0.025);
@@ -113,10 +124,35 @@ export default {
 
     .avatar-container {
       margin-right: 30px;
+      .avatar {
+        display: flex;
+        line-height: 60px;
+        font-size: 16px;
+        color: #fff;
 
+        cursor: pointer;
+        .userPic {
+          width: 48px;
+          height: 60px;
+          line-height: 80px;
+          img {
+            line-height: 60px;
+          }
+        }
+        .userName {
+          margin-right: 30px;
+        }
+      }
       .avatar-wrapper {
-        margin-top: 5px;
+        // margin-top: 5px;
         position: relative;
+        display: flex;
+        align-items: center;
+        color: #fff;
+        cursor: pointer;
+        span {
+          margin: 0 3px;
+        }
 
         .user-avatar {
           cursor: pointer;
@@ -130,7 +166,7 @@ export default {
           position: absolute;
           right: -20px;
           top: 25px;
-          font-size: 12px;
+          font-size: 16px;
         }
       }
     }
