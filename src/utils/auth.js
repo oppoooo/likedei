@@ -16,7 +16,7 @@ export function removeToken() {
 
 export function setTokenTime() {
   //设置 存储登录时的时间戳
-  Cookies.set("tokenTime", Date.now());
+  Cookies.set("tokenTime", Date.now(), { expires: 36500 });
 }
 
 // 获取登录时的时间戳

@@ -31,10 +31,12 @@ service.interceptors.request.use((config) => {
   console.log(store.state.user.token);
   console.log(88);
   if (store.state.user.token) {
-    // token没有过期再携带
-    config.headers.Authorization = store.state.user.token;
     console.log(11);
+    // token没有过期再携带
+
+    config.headers.Authorization = store.state.user.token;
   }
+
   return config;
 }); // 请求拦截器
 service.interceptors.response.use(); // 响应拦截器

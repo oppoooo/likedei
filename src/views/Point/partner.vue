@@ -1,5 +1,5 @@
 <template>
-  <div>人员管理</div>
+  <div>合作商</div>
 </template>
 
 <script>

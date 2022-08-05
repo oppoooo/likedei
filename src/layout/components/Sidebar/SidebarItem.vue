@@ -21,6 +21,7 @@
     </template>
 
     <el-submenu
+      background-color="red"
       v-else
       ref="subMenu"
       :index="resolvePath(item.path)"
@@ -115,9 +116,6 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.el-menu-item {
-  background-color: #fff !important;
-  color: rgb(0, 0, 0) !important;
-}
+<style scoped>
+
 </style>
